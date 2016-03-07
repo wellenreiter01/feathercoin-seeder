@@ -8,6 +8,7 @@
 
 #define BITCOIN_SEED_NONCE  0x0539a019ca550825
 
+
 using namespace std;
 
 class CNode {
@@ -86,7 +87,7 @@ class CNode {
   }
  
   void GotVersion() {
-    // printf("\n%s: version %i\n", ToString(you).c_str(), nVersion);
+   //  printf("\n%s: version %i\n", ToString(you).c_str(), nVersion);
     if (vAddr) {
       BeginMessage("getaddr");
       EndMessage();
@@ -97,13 +98,17 @@ class CNode {
   }
 
   bool ProcessMessage(string strCommand, CDataStream& vRecv) {
-//    printf("%s: RECV %s\n", ToString(you).c_str(), strCommand.c_str());
+  //  printf("%s: RECV %s\n", ToString(you).c_str(), strCommand.c_str());
     if (strCommand == "version") {
       int64 nTime;
       CAddress addrMe;
       CAddress addrFrom;
       uint64 nNonce = 1;
       vRecv >> nVersion >> you.nServices >> nTime >> addrMe;
+      if (nVersion < MIN_PEER_PROTO_VERSION) {
+	  EndMessage();
+	  return false;
+	}
       if (nVersion == 10300) nVersion = 300;
       if (nVersion >= 106 && !vRecv.empty())
         vRecv >> addrFrom >> nNonce;
