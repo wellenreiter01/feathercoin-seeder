@@ -60,7 +60,7 @@ class CDataStream;
 class CAutoFile;
 static const unsigned int MAX_SIZE = 0x02000000;
 
-static const int PROTOCOL_VERSION = 70002;
+static const int PROTOCOL_VERSION = 70015;
 static const int MIN_PEER_PROTO_VERSION = 60008;
 
 // Used to bypass the rule against non-const reference to temporary
