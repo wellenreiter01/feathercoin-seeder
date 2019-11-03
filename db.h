@@ -12,11 +12,12 @@
 
 #define MIN_RETRY 1000
 
-#define REQUIRE_VERSION 60008
+
+#define REQUIRE_VERSION 70001
 
 static inline int GetRequireHeight(const bool testnet = fTestNet)
 {
-    return testnet ? 0 : 163700;
+    return testnet ? 500000 : 350000;
 }
 
 std::string static inline ToString(const CService &ip) {
@@ -219,7 +220,7 @@ protected:
   void Bad_(const CService &ip, int ban);  // mark an IP as bad (and optionally ban it) (must have been returned by Get_)
   void Skipped_(const CService &ip);       // mark an IP as skipped (must have been returned by Get_)
   int Lookup_(const CService &ip);         // look up id of an IP
-  void GetIPs_(std::set<CNetAddr>& ips, int max, const bool *nets); // get a random set of IPs (shared lock only)
+  void GetIPs_(std::set<CNetAddr>& ips, uint64_t requestedFlags, int max, const bool *nets); // get a random set of IPs (shared lock only)
 
 public:
   std::map<CService, time_t> banned; // nodes that are banned, with their unban time (a)
@@ -351,8 +352,8 @@ public:
       }
     }
   }
-  void GetIPs(std::set<CNetAddr>& ips, int max, const bool *nets) {
+  void GetIPs(std::set<CNetAddr>& ips, uint64_t requestedFlags, int max, const bool *nets) {
     SHARED_CRITICAL_BLOCK(cs)
-      GetIPs_(ips, max, nets);
+      GetIPs_(ips, requestedFlags, max, nets);
   }
 };

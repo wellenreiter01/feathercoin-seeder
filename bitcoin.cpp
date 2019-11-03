@@ -6,7 +6,7 @@
 #include "serialize.h"
 #include "uint256.h"
 
-#define BITCOIN_SEED_NONCE  0x0539a019ca550825
+#define BITCOIN_SEED_NONCE  0x0539a019ca550825ULL
 
 
 using namespace std;
@@ -27,9 +27,9 @@ class CNode {
 
   int GetTimeout() {
       if (you.IsTor())
-          return 60;
+          return 120;
       else
-          return 10;
+          return 30;
   }
 
   void BeginMessage(const char *pszCommand) {
@@ -81,8 +81,10 @@ class CNode {
     CAddress me(CService("0.0.0.0"));
     BeginMessage("version");
     int nBestHeight = GetRequireHeight();
-    string ver = "/feathercoin-seeder:0.01/";
-    vSend << PROTOCOL_VERSION << nLocalServices << nTime << you << me << nLocalNonce << ver << nBestHeight;
+
+    string ver = "/feathercoin-seeder:0.03/";
+    uint8_t fRelayTxs = 0;
+    vSend << PROTOCOL_VERSION << nLocalServices << nTime << you << me << nLocalNonce << ver << nBestHeight << fRelayTxs;
     EndMessage();
   }
  
@@ -142,7 +144,9 @@ class CNode {
       // printf("%s: got %i addresses\n", ToString(you).c_str(), (int)vAddrNew.size());
       int64 now = time(NULL);
       vector<CAddress>::iterator it = vAddrNew.begin();
-      if (doneAfter == 0 || doneAfter > now + 1) doneAfter = now + 1;
+      if (vAddrNew.size() > 1) {
+        if (doneAfter == 0 || doneAfter > now + 1) doneAfter = now + 1;
+      }
       while (it != vAddrNew.end()) {
         CAddress &addr = *it;
 //        printf("%s: got address %s\n", ToString(you).c_str(), addr.ToString().c_str(), (int)(vAddr->size()));
